@@ -9,24 +9,13 @@ const app = express();
 
 app.use(cookieParser());
 
-const allowedOrigins = [
-  'https://ecom-1-b7dd.onrender.com', 
-  'http://localhost:3000'             
-];
+// const allowedOrigins = [
+//   'https://ecom-1-b7dd.onrender.com', 
+//   'http://localhost:3000'             
+// ];
 
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Authorization']
-}));
+app.use(cors());
 
 
 // Mount webhook BEFORE express.json()
