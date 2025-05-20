@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { GlobalState } from "../../../GlobalState";
 import "./OrderSuccess.css";
@@ -6,11 +6,13 @@ import axios from "../utils/axios.js";
 
 const OrderSuccess = () => {
   const location = useLocation();
-  const orderId = new URLSearchParams(location.search).get("orderId");
+  const sessionId = new URLSearchParams(location.search).get("session_id");
 
   const state = useContext(GlobalState);
   const [cart, setCart] = state.userAPI.cart;
   const [token] = state.token;
+
+  const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -26,8 +28,23 @@ const OrderSuccess = () => {
       }
     };
 
+    const fetchOrder = async () => {
+      if (!sessionId) return;
+      try {
+        const res = await axios.get(`/api/order/lookup/${sessionId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setOrderId(res.data._id);
+      } catch (err) {
+        console.error("Failed to fetch order:", err);
+      }
+    };
+
     fetchCart();
-  }, [token, setCart]);
+    fetchOrder();
+  }, [token, setCart, sessionId]);
 
   return (
     <div className="order-success">
@@ -52,12 +69,14 @@ const OrderSuccess = () => {
           processed.
         </p>
         <p className="order-id">
-          Order ID: <span>{orderId}</span>
+          Order ID: <span>{orderId || "Loading..."}</span>
         </p>
         <div className="action-buttons">
-          <Link to={`/order/${orderId}`} className="view-order-btn">
-            View Order Details
-          </Link>
+          {orderId && (
+            <Link to={`/order/${orderId}`} className="view-order-btn">
+              View Order Details
+            </Link>
+          )}
           <Link to="/order-history" className="view-history-btn">
             View Order History
           </Link>

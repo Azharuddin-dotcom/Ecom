@@ -90,8 +90,8 @@ const userCtrl = {
 
       res.cookie("refreshtoken", refreshtoken, {
         httpOnly: true,
-        secure: true,          
-        sameSite: "None",
+        secure: true, // Only works on HTTPS          
+        sameSite: "None", // Important for cross-site cookie
         path: "/user/refresh_token",
       });
 

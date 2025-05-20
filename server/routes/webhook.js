@@ -14,7 +14,7 @@ router.post(
     console.log("Webhook received");
     const sig = req.headers["stripe-signature"];
     let event;
-    
+
     try {
       event = stripe.webhooks.constructEvent(
         req.body,
@@ -28,11 +28,14 @@ router.post(
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-        console.log("session.metadata:", session.metadata);
+      console.log("session.metadata:", session.metadata);
       try {
         const order = await Order.findByIdAndUpdate(
           session.metadata.orderId,
-          { status: "confirmed" },
+          {
+            status: "confirmed",
+            session_id: session.id,
+          },
           { new: true }
         );
 
