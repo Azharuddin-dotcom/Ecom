@@ -22,6 +22,7 @@ const OrderSuccess = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(res);
         setCart(res.data.cart || []);
       } catch (err) {
         console.error("Failed to fetch updated cart:", err);
