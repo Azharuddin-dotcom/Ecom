@@ -1,0 +1,150 @@
+.create-product-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.create-product-page h2 {
+  text-align: center;
+  color: #3a4a6d;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e6ed;
+}
+
+.create-product-page form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.create-product-page form > div {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.create-product-page label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+.create-product-page input,
+.create-product-page textarea,
+.create-product-page select {
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.create-product-page input:focus,
+.create-product-page textarea:focus,
+.create-product-page select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  outline: none;
+}
+
+.create-product-page input[type="file"] {
+  padding: 0.5rem;
+  border: none;
+}
+
+.create-product-page textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.create-product-page button {
+  background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 1rem;
+}
+
+.create-product-page button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.create-product-page button:active {
+  transform: translateY(0);
+}
+
+.create-product-page img {
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  margin-top: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.create-product-page img:hover {
+  transform: scale(1.05);
+}
+
+.create-product-page p {
+  color: #4a5568;
+  margin: 0.5rem 0;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.create-product-page p[style*="Uploading"] {
+  color: #667eea;
+  font-weight: 600;
+  animation: pulse 1.5s infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .create-product-page {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .create-product-page h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-product-page {
+    padding: 1rem;
+  }
+  
+  .create-product-page input,
+  .create-product-page textarea,
+  .create-product-page select {
+    padding: 0.7rem;
+  }
+  
+  .create-product-page button {
+    padding: 0.8rem;
+  }
+}
