@@ -10,7 +10,7 @@ const app = express();
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'https://ecom-1-b7dd.onrender.com',
+  origin: 'https://ecom-1-b7dd.onrender.com', 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
