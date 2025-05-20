@@ -12,7 +12,7 @@ export const DataProvider = ({ children }) => {
 
     const refreshToken = async () => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/refresh_token`);
+            const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/refresh_token`,{ withCredentials: true });
             // console.log(res);
             setToken(res.data.accesstoken);
         } catch (err) {
