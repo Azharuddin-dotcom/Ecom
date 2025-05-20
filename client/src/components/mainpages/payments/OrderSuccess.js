@@ -37,6 +37,7 @@ const OrderSuccess = () => {
           },
         });
         setOrderId(res.data._id);
+        setCart([]);
       } catch (err) {
         console.error("Failed to fetch order:", err);
       }

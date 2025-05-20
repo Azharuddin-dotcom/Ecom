@@ -80,6 +80,9 @@ router.post("/create-checkout-session", auth, async (req, res) => {
       },
     });
 
+    order.session_id = session.id;
+    await order.save();
+
     res.json({ id: session.id });
   } catch (err) {
     console.error("Stripe checkout error:", err);
