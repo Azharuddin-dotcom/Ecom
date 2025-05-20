@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { GlobalState } from "../../../GlobalState";
 import ProductList from "../utils/ProductLists/ProductList";
-import axios from "axios";
+import axios from "../utils/axios.js";
 import "./products.css";
 
 const Product = () => {
@@ -51,7 +51,7 @@ const Product = () => {
     try {
       await Promise.all(
         selected.map((product) =>
-          axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/products/${product._id}`, {
+          axios.delete(`/api/products/${product._id}`, {
             headers: { Authorization: token },
           })
         )
@@ -75,7 +75,7 @@ const Product = () => {
         ...(maxPrice && { "price[lte]": maxPrice }),
       };
 
-      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/products`, { params });
+      const res = await axios.get(`/api/products`, { params });
 
       const updated = (res.data.products || res.data).map((p) => ({
         ...p,

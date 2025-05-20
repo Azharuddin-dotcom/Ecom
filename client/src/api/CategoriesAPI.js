@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../components/mainpages/utils/axios.js';
 
 const CategoriesAPI = () => {
   const [categories, setCategories] = useState([]);
  
   const getCategories = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/category`);
+        const res = await axios.get(`/api/category`);
         setCategories(res.data.categories);
         // console.log(res.data.categories);
       } catch (err) {

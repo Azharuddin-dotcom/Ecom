@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { GlobalState } from "../../../../GlobalState";
-import axios from "axios";
+import axios from "../axios.js";
 
 const DetailProduct = () => {
   const params = useParams();
@@ -50,7 +50,7 @@ const DetailProduct = () => {
           try {
             setLoading(true);
             // Using the new endpoint we just created to fetch a single product
-            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/products/${params.id}`);
+            const response = await axios.get(`/api/products/${params.id}`);
             const fetchedProduct = response.data;
             
             if (!fetchedProduct) {
@@ -96,7 +96,7 @@ const DetailProduct = () => {
       const formImg = new FormData();
       formImg.append("image", file);
 
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upload`, formImg, {
+      const res = await axios.post(`/api/upload`, formImg, {
         headers: {
           "content-type": "multipart/form-data",
           Authorization: token,
@@ -120,7 +120,7 @@ const DetailProduct = () => {
         category: categoryName,
       };
 
-      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/products/${detailProduct._id}`, updatedForm, {
+      await axios.put(`/api/products/${detailProduct._id}`, updatedForm, {
         headers: {
           Authorization: token,
         },

@@ -6,7 +6,7 @@ import { MdClose } from "react-icons/md";
 import { MdOutlineAddShoppingCart } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { GlobalState } from '../../GlobalState';
-import axios from 'axios';
+import axios from '../mainpages/utils/axios.js';
 
 const Header = () => {
 
@@ -22,12 +22,12 @@ const Header = () => {
     const logoutUser = async () => {
     try {
         // 1. Clear cart on server
-        await axios.patch(`${process.env.REACT_APP_API_BASE_URL}/user/addcart`, { cart: [] }, {
+        await axios.patch(`/user/addcart`, { cart: [] }, {
             headers: { Authorization: token }
         });
 
         // 2. Log out from server
-        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/logout`);
+        await axios.get(`/user/logout`);
 
         // 3. Clear local state
         localStorage.clear();

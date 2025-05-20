@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios.js';
 import { GlobalState } from '../../../GlobalState';
 import './createProduct.css';
 
@@ -32,7 +32,7 @@ const CreateProductPage = () => {
     formData.append('image', file);
 
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/upload`, formData, {
+      const res = await axios.post(`/api/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: token,
@@ -66,7 +66,7 @@ const CreateProductPage = () => {
     };
 
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/products`, productToSend, {
+      const res = await axios.post(`/api/products`, productToSend, {
         headers: { Authorization: token },
       });
 

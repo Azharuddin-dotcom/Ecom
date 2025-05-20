@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios'
+import axios from '../utils/axios.js';
 
 
 import './registerStyles.css';
@@ -27,14 +27,14 @@ const Register = () => {
 
   try {
 
-    await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/register`, { ...user });
+    await axios.post(`/user/register`, { ...user });
 
-    await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/login`, {
+    await axios.post(`/user/login`, {
       email: user.email,
       password: user.password
     });
 
-    await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/refresh_token`); 
+    await axios.get(`/user/refresh_token`); 
 
     localStorage.setItem('firstLogin', true);
     window.location.href = '/';

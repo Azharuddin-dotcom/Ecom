@@ -1,6 +1,6 @@
 import React, { useState }from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios';
+import axios from '../utils/axios.js';
 
 const Login = () => {
 
@@ -17,7 +17,7 @@ const Login = () => {
   const loginSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/user/login`, {...user})
+      await axios.post(`/user/login`, {...user})
 
       localStorage.setItem('firstLogin', true)
 

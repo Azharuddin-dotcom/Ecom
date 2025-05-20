@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import ProductAPI from "./api/ProductAPI";
 import UserAPI from "./api/UserAPI";
 import CategoriesAPI from "./api/CategoriesAPI";
-import axios from "axios";
+import axios from "./components/mainpages/utils/axios.js";
 
 export const GlobalState = createContext();
 
@@ -12,8 +12,8 @@ export const DataProvider = ({ children }) => {
 
     const refreshToken = async () => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/refresh_token`,{ withCredentials: true });
-            // console.log(res);
+            const res = await axios.get(`/user/refresh_token`);
+            console.log(res);
             setToken(res.data.accesstoken);
         } catch (err) {
             alert(err.response.data.msg);

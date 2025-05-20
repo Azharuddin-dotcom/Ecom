@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { GlobalState } from '../../../GlobalState';
-import axios from 'axios';
+import axios from '../utils/axios.js';
 import './categories.css';
 
 function Categories() {
@@ -17,12 +17,12 @@ function Categories() {
 
     try {
       if (editing) {
-        await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/category/${id}`, { name }, {
+        await axios.put(`/api/category/${id}`, { name }, {
           headers: { Authorization: token }
         });
         alert('Category updated');
       } else {
-        await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/category`, { name }, {
+        await axios.post(`/api/category`, { name }, {
           headers: { Authorization: token }
         });
         alert('Category created');
@@ -33,7 +33,7 @@ function Categories() {
       setId('');
 
       // Refresh categories
-      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/category`);
+      const res = await axios.get(`/api/category`);
       setCategories(res.data.categories);
 
     } catch (err) {
@@ -50,11 +50,11 @@ function Categories() {
   const deleteCategory = async (id) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
-        await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/category/${id}`, {
+        await axios.delete(`/api/category/${id}`, {
           headers: { Authorization: token }
         });
 
-        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/category`);
+        const res = await axios.get(`/api/category`);
         setCategories(res.data.categories);
         alert('Category deleted');
       } catch (err) {

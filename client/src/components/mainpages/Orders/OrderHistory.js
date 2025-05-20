@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios.js';
 import { Link } from 'react-router-dom';
 import { GlobalState } from '../../../GlobalState';
 import './OrderHistory.css';
@@ -15,7 +15,7 @@ const OrderHistory = () => {
     const getOrders = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/stripe/history`, {
+        const res = await axios.get(`/api/stripe/history`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOrders(res.data);

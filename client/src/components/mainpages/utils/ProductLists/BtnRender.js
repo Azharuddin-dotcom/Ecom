@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
 import { GlobalState } from '../../../../GlobalState';
-import axios from 'axios';
+import axios from '../axios.js';
 
 const BtnRender = ({ product }) => {
   const state = useContext(GlobalState);
@@ -11,7 +11,7 @@ const BtnRender = ({ product }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/products/${product._id}`, {
+      await axios.delete(`/api/products/${product._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Product deleted successfully!");
