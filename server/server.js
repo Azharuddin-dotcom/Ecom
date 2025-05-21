@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const path = require("path");
-const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
@@ -11,7 +9,7 @@ const app = express();
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'https://ecom-1-b7dd.onrender.com',
+  origin: 'https://ecom-1-b7dd.onrender.com' || process.env.CLIENT_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -39,30 +37,11 @@ app.use('/api', require('./routes/history.js'));
 app.use('/api', require('./routes/orderRoutes.js'));
 
 
-// Serve static files from React app
-app.use(express.static(path.join(__dirname, "client/build")));
-
-// Root route
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build", "index.html"));
-});
-
-// All other routes should be handled by React Router
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build", "index.html"));
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
 const PORT = process.env.PORT || 5000;
 
-// app.get("/", (req, res) => {
-//     res.json({msg: "example"})
-// })
+app.get("/", (req, res) => {
+    res.json({msg: "example"})
+})
 
 app.listen(PORT, () => {
     console.log("SERVER IS RUNNING");
