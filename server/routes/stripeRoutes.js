@@ -88,58 +88,58 @@ router.post("/create-checkout-session", auth, async (req, res) => {
 });
 
 // Webhook handler to process successful payments
-router.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    console.log("Webhook received");
-    const sig = req.headers["stripe-signature"];
-    let event;
+// router.post(
+//   "/webhook",
+//   express.raw({ type: "application/json" }),
+//   async (req, res) => {
+//     console.log("Webhook received");
+//     const sig = req.headers["stripe-signature"];
+//     let event;
 
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      console.error("Webhook Error:", err.message);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+//     try {
+//       event = stripe.webhooks.constructEvent(
+//         req.body,
+//         sig,
+//         process.env.STRIPE_WEBHOOK_SECRET
+//       );
+//     } catch (err) {
+//       console.error("Webhook Error:", err.message);
+//       return res.status(400).send(`Webhook Error: ${err.message}`);
+//     }
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
+//     if (event.type === "checkout.session.completed") {
+//       const session = event.data.object;
 
-      try {
-        // Update order status to completed
-        const order = await Order.findByIdAndUpdate(
-          session.metadata.orderId,
-          {
-            status: "confirmed",
-            session_id: session.id
-          },
-          { new: true }
-        );
+//       try {
+//         // Update order status to completed
+//         const order = await Order.findByIdAndUpdate(
+//           session.metadata.orderId,
+//           {
+//             status: "confirmed",
+//             session_id: session.id
+//           },
+//           { new: true }
+//         );
 
-        // Clear user's cart after order completion
-        await User.findByIdAndUpdate(session.metadata.userId, {
-          $set: { cart: [] },
-        });
+//         // Clear user's cart after order completion
+//         await User.findByIdAndUpdate(session.metadata.userId, {
+//           $set: { cart: [] },
+//         });
 
-        // Increment sold count on each product
-        for (const item of order.products) {
-          await Product.findByIdAndUpdate(item.product, {
-            $inc: { sold: item.quantity },
-          });
-        }
-      } catch (err) {
-        console.error("Order completion error:", err);
-      }
-    }
+//         // Increment sold count on each product
+//         for (const item of order.products) {
+//           await Product.findByIdAndUpdate(item.product, {
+//             $inc: { sold: item.quantity },
+//           });
+//         }
+//       } catch (err) {
+//         console.error("Order completion error:", err);
+//       }
+//     }
 
-    res.json({ received: true });
-  }
-);
+//     res.json({ received: true });
+//   }
+// );
 
 // Get all orders for a user
 router.get('/history', auth, async (req, res) => {
@@ -173,30 +173,30 @@ router.get('/order/:id', auth, async (req, res) => {
   }
 });
 
-  router.get('/order-success', async (req, res) => {
-    try {
-      const { orderId } = req.query;
+  // router.get('/order-success', async (req, res) => {
+  //   try {
+  //     const { orderId } = req.query;
       
-      if (!orderId) {
-        return res.status(400).send('Order ID is required');
-      }
+  //     if (!orderId) {
+  //       return res.status(400).send('Order ID is required');
+  //     }
 
-      const updatedOrder = await Order.findByIdAndUpdate(orderId, { status: 'confirmed' }, { new: true });
+  //     const updatedOrder = await Order.findByIdAndUpdate(orderId, { status: 'confirmed' }, { new: true });
       
-      res.send(`
-        <html>
-          <head><title>Order Success</title></head>
-          <body>
-            <h1>Thank you for your order!</h1>
-            <p>Your order (${orderId}) has been successfully processed.</p>
-            <a href="/">Return to homepage</a>
-          </body>
-        </html>
-      `);
-    } catch (error) {
-      console.error('Error processing successful order:', error);
-      res.status(500).send('An error occurred while processing your order');
-    }
-  });
+  //     res.send(`
+  //       <html>
+  //         <head><title>Order Success</title></head>
+  //         <body>
+  //           <h1>Thank you for your order!</h1>
+  //           <p>Your order (${orderId}) has been successfully processed.</p>
+  //           <a href="/">Return to homepage</a>
+  //         </body>
+  //       </html>
+  //     `);
+  //   } catch (error) {
+  //     console.error('Error processing successful order:', error);
+  //     res.status(500).send('An error occurred while processing your order');
+  //   }
+  // });
 
 module.exports = router;

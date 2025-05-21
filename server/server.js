@@ -10,7 +10,7 @@ const app = express();
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: 'https://ecom-1-b7dd.onrender.com' || process.env.CLIENT_URL,
+  origin: process.env.CLIENT_URL || 'https://ecom-1-b7dd.onrender.com', 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -19,7 +19,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Mount webhook BEFORE express.json()
-app.use('/api/stripe', require('./routes/webhook'));
+app.use('/api/stripe', require('./routes/webhook.js'));
 
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing form data
@@ -34,12 +34,12 @@ app.use('/api', require('./routes/history.js'));
 app.use('/api', require('./routes/orderRoutes.js'));
 
 
-// app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
 
 // MongoDB connection
 const URI = process.env.MONGODB_URL;
