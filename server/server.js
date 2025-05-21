@@ -31,7 +31,7 @@ app.use('/api/upload', require('./routes/uploadRouter.js'));
 app.use('/api', require('./routes/productRouter.js'));
 app.use('/api/stripe', require('./routes/stripeRoutes.js'));
 app.use('/api', require('./routes/history.js'));
-app.use('/api', require('./routes/orderRoutes.js'));
+
 
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
