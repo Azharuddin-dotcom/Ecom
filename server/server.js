@@ -30,15 +30,27 @@ app.use('/api', require('./routes/categoryRouter.js'));
 app.use('/api/upload', require('./routes/uploadRouter.js'));
 app.use('/api', require('./routes/productRouter.js'));
 app.use('/api/stripe', require('./routes/stripeRoutes.js'));
-app.use('/api', require('./routes/history.js'));
+app.use('/api', require('./routes/history.js'));  
 
 
 
-app.use(express.static(path.join(__dirname, 'client', 'build')));
+// app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+// });
+
+const clientBuildPath = process.env.NODE_ENV === 'production' 
+  ? path.join(__dirname, '..', 'client', 'build')  // Adjust this path as needed
+  : path.join(__dirname, 'client', 'build');
+
+// Serve static files
+app.use(express.static(clientBuildPath));
+
+// Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
 // MongoDB connection
