@@ -3,20 +3,21 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const path = require("path");
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
 
 app.use(cookieParser());
 
-app.use(cors({
-  origin: 'https://ecom-1-b7dd.onrender.com', 
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'https://ecom-1-b7dd.onrender.com',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Authorization']
-}));
+};
+app.use(cors(corsOptions));
 
 
 // Mount webhook BEFORE express.json()
@@ -38,17 +39,30 @@ app.use('/api', require('./routes/history.js'));
 app.use('/api', require('./routes/orderRoutes.js'));
 
 
-// app.use(express.static(path.join(__dirname, "client/build")));
+// Serve static files from React app
+app.use(express.static(path.join(__dirname, "client/build")));
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "client/build", "index.html"));
-// });
+// Root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+});
+
+// All other routes should be handled by React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-    res.json({msg: "example"})
-})
+// app.get("/", (req, res) => {
+//     res.json({msg: "example"})
+// })
 
 app.listen(PORT, () => {
     console.log("SERVER IS RUNNING");
