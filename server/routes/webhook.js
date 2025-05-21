@@ -40,7 +40,7 @@ router.post(
         );
 
         if (!order) {
-          console.error("❌ Order not found:", session.metadata.orderId);
+          console.error("Order not found:", session.metadata.orderId);
         } else {
           console.log("✅ Order confirmed:", order._id);
         }

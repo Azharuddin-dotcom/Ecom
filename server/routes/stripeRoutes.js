@@ -173,32 +173,30 @@ router.get('/order/:id', auth, async (req, res) => {
   }
 });
 
-router.get('/order-success', async (req, res) => {
-  try {
-    const { orderId } = req.query;
-    
-    if (!orderId) {
-      return res.status(400).send('Order ID is required');
+  router.get('/order-success', async (req, res) => {
+    try {
+      const { orderId } = req.query;
+      
+      if (!orderId) {
+        return res.status(400).send('Order ID is required');
+      }
+
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, { status: 'confirmed' }, { new: true });
+      
+      res.send(`
+        <html>
+          <head><title>Order Success</title></head>
+          <body>
+            <h1>Thank you for your order!</h1>
+            <p>Your order (${orderId}) has been successfully processed.</p>
+            <a href="/">Return to homepage</a>
+          </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error('Error processing successful order:', error);
+      res.status(500).send('An error occurred while processing your order');
     }
-    
-   
-    const Order = await Order.findByIdAndUpdate(orderId, { status: 'confirmed' }, { new: true });
-    
-    // Option 1: Render a success page directly
-    res.send(`
-      <html>
-        <head><title>Order Success</title></head>
-        <body>
-          <h1>Thank you for your order!</h1>
-          <p>Your order (${orderId}) has been successfully processed.</p>
-          <a href="/">Return to homepage</a>
-        </body>
-      </html>
-    `);
-  } catch (error) {
-    console.error('Error processing successful order:', error);
-    res.status(500).send('An error occurred while processing your order');
-  }
-});
+  });
 
 module.exports = router;

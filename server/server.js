@@ -33,10 +33,10 @@ app.use('/api/stripe', require('./routes/stripeRoutes.js'));
 app.use('/api', require('./routes/history.js'));
 app.use('/api', require('./routes/orderRoutes.js'));
 
-// ✅ Serve React static files
+
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-// ✅ Fallback route for React (after all API routes)
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
