@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const path = require("path");
 // const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -35,6 +36,13 @@ app.use('/api', require('./routes/productRouter.js'));
 app.use('/api/stripe', require('./routes/stripeRoutes.js'));
 app.use('/api', require('./routes/history.js'));
 app.use('/api', require('./routes/orderRoutes.js'));
+
+
+app.use(express.static(path.join(__dirname, "client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 
