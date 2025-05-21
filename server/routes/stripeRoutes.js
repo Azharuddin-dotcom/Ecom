@@ -185,7 +185,7 @@ router.get('/order-success', async (req, res) => {
     const Order = await Order.findByIdAndUpdate(orderId, { status: 'confirmed' }, { new: true });
     
     // Option 1: Render a success page directly
-    res.send(
+    res.send(`
       <html>
         <head><title>Order Success</title></head>
         <body>
@@ -194,7 +194,7 @@ router.get('/order-success', async (req, res) => {
           <a href="/">Return to homepage</a>
         </body>
       </html>
-    );
+    `);
   } catch (error) {
     console.error('Error processing successful order:', error);
     res.status(500).send('An error occurred while processing your order');
