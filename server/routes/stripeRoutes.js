@@ -80,7 +80,7 @@ router.post("/create-checkout-session", auth, async (req, res) => {
         userId: user._id.toString(),
       },
     });
-
+    console.log('Redirecting to:', `${process.env.CLIENT_URL}/order-success?orderId=${order._id}`);
     res.json({ id: session.id });
   } catch (err) {
     res.status(500).json({ error: err.message || "Checkout session failed" });
