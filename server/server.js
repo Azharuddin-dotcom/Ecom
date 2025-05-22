@@ -9,14 +9,15 @@ const app = express();
 
 app.use(cookieParser());
 
-const corsOptions = {
-  origin: process.env.CLIENT_URL || 'https://ecom-three-theta.vercel.app/', 
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Authorization']
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: process.env.CLIENT_URL || 'https://ecom-three-theta.vercel.app/', 
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   exposedHeaders: ['Authorization']
+// };
+// app.use(cors(corsOptions));
+app.use(cors());
 
 // Mount webhook BEFORE express.json()
 app.use('/api/stripe', require('./routes/webhook.js'));
