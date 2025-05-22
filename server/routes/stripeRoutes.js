@@ -29,28 +29,29 @@ router.post("/create-checkout-session", auth, async (req, res) => {
         if (!product) throw new Error(`Product not found: ${item._id}`);
         return {
           product,
-          quantity: item.quantity || 1
+          quantity: item.quantity || 1,
         };
       })
     );
 
     // Calculate total amount
-    const amount = validatedProducts.reduce((total, item) => (
-      total + item.product.price * item.quantity
-    ), 0);
+    const amount = validatedProducts.reduce(
+      (total, item) => total + item.product.price * item.quantity,
+      0
+    );
 
     // Create order with status pending
     const order = await Order.create({
       user: user._id,
       amount,
-      products: validatedProducts.map(item => ({
+      products: validatedProducts.map((item) => ({
         product: item.product._id,
         title: item.product.title,
         price: item.product.price,
         quantity: item.quantity,
-        images: item.product.images
+        images: item.product.images,
       })),
-      status: 'pending'
+      status: "pending",
     });
 
     const lineItems = validatedProducts.map((item) => ({
@@ -82,7 +83,6 @@ router.post("/create-checkout-session", auth, async (req, res) => {
 
     res.json({ id: session.id });
   } catch (err) {
-    console.error("Stripe checkout error:", err);
     res.status(500).json({ error: err.message || "Checkout session failed" });
   }
 });
@@ -142,48 +142,59 @@ router.post("/create-checkout-session", auth, async (req, res) => {
 // );
 
 // Get all orders for a user
-router.get('/history', auth, async (req, res) => {
+router.get("/history", auth, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id })
-      .sort('-createdAt');
-      
+    const orders = await Order.find({ user: req.user.id }).sort("-createdAt");
+
     res.json(orders);
   } catch (err) {
-    console.error("Error fetching order history:", err);
-    res.status(500).json({ error: err.message || "Failed to fetch order history" });
+    res
+      .status(500)
+      .json({ error: err.message || "Failed to fetch order history" });
   }
 });
 
 // Get specific order details
-router.get('/order/:id', auth, async (req, res) => {
+router.get("/order/:id", auth, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-    
+
     if (!order) return res.status(404).json({ error: "Order not found" });
-    
+
     // Check if the order belongs to the current user
     if (order.user.toString() !== req.user.id) {
-      return res.status(403).json({ error: "Not authorized to view this order" });
+      return res
+        .status(403)
+        .json({ error: "Not authorized to view this order" });
     }
-    
+
     res.json(order);
   } catch (err) {
-    console.error("Error fetching order details:", err);
-    res.status(500).json({ error: err.message || "Failed to fetch order details" });
+    res
+      .status(500)
+      .json({ error: err.message || "Failed to fetch order details" });
   }
 });
 
-  router.get('/order-success', async (req, res) => {
-    try {
-      const { orderId } = req.query;
-      
-      if (!orderId) {
-        return res.status(400).send('Order ID is required');
-      }
+router.get("/order-success", async (req, res) => {
+  try {
+    const { orderId } = req.query;
 
-      const updatedOrder = await Order.findByIdAndUpdate(orderId, { status: 'confirmed' }, { new: true });
-      
-      res.send(`
+    if (!orderId) {
+      return res.status(400).send("Order ID is required");
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status: "confirmed" },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).send("Order not found");
+    }
+
+    res.send(`
         <html>
           <head><title>Order Success</title></head>
           <body>
@@ -193,10 +204,9 @@ router.get('/order/:id', auth, async (req, res) => {
           </body>
         </html>
       `);
-    } catch (error) {
-      console.error('Error processing successful order:', error);
-      res.status(500).send('An error occurred while processing your order');
-    }
-  });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 module.exports = router;

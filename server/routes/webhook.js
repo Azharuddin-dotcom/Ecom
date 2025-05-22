@@ -11,7 +11,6 @@ router.post(
   "/webhook",
   express.raw({ type: "application/json" }),
   async (req, res) => {
-    console.log("Webhook received");
     const sig = req.headers["stripe-signature"];
     let event;
 
@@ -22,13 +21,11 @@ router.post(
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.error("Webhook Error:", err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      console.log("session.metadata:", session.metadata);
       try {
         const order = await Order.findByIdAndUpdate(
           session.metadata.orderId,

@@ -1,6 +1,8 @@
 require('dotenv').config();
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
+const User = require('../models/userModel.js');
+const Order = require('../models/orderModel.js');
 
 router.get('/orders', async (req, res) => {
   try {

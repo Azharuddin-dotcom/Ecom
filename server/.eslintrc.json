@@ -1,0 +1,11 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": ["eslint:recommended"],
+  "plugins": ["regexp"],
+  "rules": {
+    "regexp/no-dupe-characters-character-class": "warn"
+  }
+}

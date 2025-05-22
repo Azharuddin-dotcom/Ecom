@@ -38,7 +38,7 @@ class APIfeatures {
       }
     }
 
-    console.log("Parsed filter:", mongoQuery);
+  
 
     this.query = this.query.find(mongoQuery);
     this.mongoQuery = mongoQuery;
@@ -51,7 +51,7 @@ class APIfeatures {
 
       this.query = this.query.sort(sortBy);
 
-      console.log(sortBy);
+     
     } else {
       this.query = this.query.sort("-createdAt");
     }
