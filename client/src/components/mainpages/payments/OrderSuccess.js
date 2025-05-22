@@ -39,7 +39,7 @@ const OrderSuccess = () => {
           setTimeout(checkOrderStatus, 2000);
         }
       } catch (err) {
-        console.error('❌ Failed to check order status:', err.message);
+        console.error(' Failed to check order status:', err.message);
       }
     };
 
