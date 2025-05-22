@@ -10,7 +10,7 @@ const app = express();
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'https://ecom-1-b7dd.onrender.com', 
+  origin: process.env.CLIENT_URL || 'https://ecom-three-theta.vercel.app/', 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
