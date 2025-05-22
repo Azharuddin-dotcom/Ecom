@@ -176,37 +176,37 @@ router.get("/order/:id", auth, async (req, res) => {
   }
 });
 
-// router.get("/order-success", async (req, res) => {
-//   try {
-//     const { orderId } = req.query;
+router.get("/order-success", async (req, res) => {
+  try {
+    const { orderId } = req.query;
 
-//     if (!orderId) {
-//       return res.status(400).send("Order ID is required");
-//     }
+    if (!orderId) {
+      return res.status(400).send("Order ID is required");
+    }
 
-//     const updatedOrder = await Order.findByIdAndUpdate(
-//       orderId,
-//       { status: "confirmed" },
-//       { new: true }
-//     );
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { status: "confirmed" },
+      { new: true }
+    );
 
-//     if (!updatedOrder) {
-//       return res.status(404).send("Order not found");
-//     }
+    if (!updatedOrder) {
+      return res.status(404).send("Order not found");
+    }
 
-//     res.send(`
-//         <html>
-//           <head><title>Order Success</title></head>
-//           <body>
-//             <h1>Thank you for your order!</h1>
-//             <p>Your order (${orderId}) has been successfully processed.</p>
-//             <a href="/">Return to homepage</a>
-//           </body>
-//         </html>
-//       `);
-//   } catch (error) {
-//     res.status(500).send(error.message);
-//   }
-// });
+    res.send(`
+        <html>
+          <head><title>Order Success</title></head>
+          <body>
+            <h1>Thank you for your order!</h1>
+            <p>Your order (${orderId}) has been successfully processed.</p>
+            <a href="/">Return to homepage</a>
+          </body>
+        </html>
+      `);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 module.exports = router;
