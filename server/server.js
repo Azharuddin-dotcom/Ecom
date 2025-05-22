@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const path = require('path'); 
+
 
 const app = express();
 
@@ -35,23 +35,21 @@ app.use('/api', require('./routes/history.js'));
 
 
 // app.use(express.static(path.join(__dirname, 'client', 'build')));
-
-
 // app.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 // });
+// const clientBuildPath = process.env.NODE_ENV === 'production' 
+//   ? path.join(__dirname, '..', 'client', 'build')  // Adjust this path as needed
+//   : path.join(__dirname, 'client', 'build');
 
-const clientBuildPath = process.env.NODE_ENV === 'production' 
-  ? path.join(__dirname, '..', 'client', 'build')  // Adjust this path as needed
-  : path.join(__dirname, 'client', 'build');
+// // Serve static files
+// app.use(express.static(clientBuildPath));
 
-// Serve static files
-app.use(express.static(clientBuildPath));
+// // Handle React routing, return all requests to React app
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(clientBuildPath, 'index.html'));
+// });
 
-// Handle React routing, return all requests to React app
-app.get('*', (req, res) => {
-  res.sendFile(path.join(clientBuildPath, 'index.html'));
-});
 
 // MongoDB connection
 const URI = process.env.MONGODB_URL;

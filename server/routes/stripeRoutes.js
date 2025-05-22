@@ -168,7 +168,7 @@ router.get("/order/:id", auth, async (req, res) => {
         .json({ error: "Not authorized to view this order" });
     }
 
-    res.json(order);
+    res.json({ status: order.status });
   } catch (err) {
     res
       .status(500)
