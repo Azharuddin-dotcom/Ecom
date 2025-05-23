@@ -7,83 +7,88 @@ const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const auth = require("../middleware/auth");
+const mongoose = require("mongoose");
+const { URL } = require("url");
 
 // Create checkout session - protected by auth middleware
 router.post("/create-checkout-session", auth, async (req, res) => {
-  const { cart } = req.body;
-  // console.log("Cart:", cart);
-
-  if (!cart || !Array.isArray(cart) || cart.length === 0) {
-    return res.status(400).json({ error: "Cart is empty or invalid" });
-  }
-
   try {
-    // Get user from auth middleware
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(400).json({ error: "User not found" });
+    const { cart } = req.body;
 
-    // Validate and fetch products from DB
+    // Validate cart
+    if (!cart?.length) {
+      return res.status(400).json({ error: "Cart is empty" });
+    }
+
+    // Validate CLIENT_URL
+    if (!process.env.CLIENT_URL) {
+      throw new Error("CLIENT_URL is not configured");
+    }
+    new URL(process.env.CLIENT_URL); // Validate URL format
+
+    // Get user and validate products
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
     const validatedProducts = await Promise.all(
       cart.map(async (item) => {
         const product = await Product.findById(item._id);
-        if (!product) throw new Error(`Product not found: ${item._id}`);
-        return {
-          product,
-          quantity: item.quantity || 1,
-        };
+        if (!product) throw new Error(`Product ${item._id} not found`);
+        if (product.stock < (item.quantity || 1)) {
+          throw new Error(`Not enough stock for ${product.title}`);
+        }
+        return { product, quantity: item.quantity || 1 };
       })
     );
 
-    // Calculate total amount
-    const amount = validatedProducts.reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
-    );
-
-    // Create order with status pending
+    // Create order
     const order = await Order.create({
       user: user._id,
-      amount,
-      products: validatedProducts.map((item) => ({
+      amount: validatedProducts.reduce(
+        (total, item) => total + item.product.price * item.quantity,
+        0
+      ),
+      products: validatedProducts.map(item => ({
         product: item.product._id,
         title: item.product.title,
         price: item.product.price,
         quantity: item.quantity,
-        images: item.product.images,
+        image: item.product.images?.url
       })),
-      status: "pending",
+      status: "pending"
     });
 
-    const lineItems = validatedProducts.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: item.product.title,
-          description: item.product.description,
-          // Adding product image if available
-          images: item.product.images.url ? [item.product.images.url] : [],
-        },
-        unit_amount: Math.round(item.product.price * 100), // convert to cents
-      },
-      quantity: item.quantity,
-    }));
+    // Create Stripe session
+    const successUrl = new URL("/order-success", process.env.CLIENT_URL);
+    successUrl.searchParams.append("orderId", order._id.toString());
 
-    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: lineItems,
+      line_items: validatedProducts.map(item => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.product.title,
+            description: item.product.description.slice(0, 300),
+            images: item.product.images?.url ? [item.product.images.url] : []
+          },
+          unit_amount: Math.round(item.product.price * 100)
+        },
+        quantity: item.quantity
+      })),
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/order-success?orderId=${order._id}`,
-      cancel_url: `${process.env.CLIENT_URL}/cart`,
+      success_url: successUrl.toString(),
+      cancel_url: new URL("/cart", process.env.CLIENT_URL).toString(),
       metadata: {
         orderId: order._id.toString(),
-        userId: user._id.toString(),
-      },
+        userId: user._id.toString()
+      }
     });
-    console.log('Redirecting to:', `${process.env.CLIENT_URL}/order-success?orderId=${order._id}`);
+
     res.json({ id: session.id });
   } catch (err) {
-    res.status(500).json({ error: err.message || "Checkout session failed" });
+    console.error("Checkout error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -176,36 +181,45 @@ router.get("/order/:id", auth, async (req, res) => {
   }
 });
 
-router.get("/order-success", async (req, res) => {
+router.get("/order-success", auth, async (req, res) => {
   try {
     const { orderId } = req.query;
 
-    if (!orderId) {
-      return res.status(400).send("Order ID is required");
+    if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Valid order ID is required" 
+      });
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
-      { status: "confirmed" },
-      { new: true }
-    );
+    const order = await Order.findOne({
+      _id: orderId,
+      user: req.user.id
+    }).populate("products.product");
 
-    if (!updatedOrder) {
-      return res.status(404).send("Order not found");
+    if (!order) {
+      return res.status(404).json({ 
+        success: false,
+        error: "Order not found" 
+      });
     }
 
-    res.send(`
-        <html>
-          <head><title>Order Success</title></head>
-          <body>
-            <h1>Thank you for your order!</h1>
-            <p>Your order (${orderId}) has been successfully processed.</p>
-            <a href="/">Return to homepage</a>
-          </body>
-        </html>
-      `);
-  } catch (error) {
-    res.status(500).send(error.message);
+    res.json({
+      success: true,
+      order: {
+        id: order._id,
+        amount: order.amount,
+        status: order.status,
+        products: order.products,
+        createdAt: order.createdAt
+      }
+    });
+  } catch (err) {
+    console.error("Order verification error:", err);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to verify order" 
+    });
   }
 });
 

@@ -1,87 +1,127 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { GlobalState } from '../../../GlobalState';
-import axios from '../utils/axios.js';
+import axios from '../utils/axios';
+import Loading from '../utils/loading/Loading';
 import './OrderSuccess.css';
 
 const OrderSuccess = () => {
-  const location = useLocation();
-  const orderId = new URLSearchParams(location.search).get('orderId');
-
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const orderId = searchParams.get('orderId');
+  
   const state = useContext(GlobalState);
-  const [cart, setCart] = state.userAPI.cart;
   const [token] = state.token;
+  const [, setCart] = state.userAPI.cart;
 
-  const [confirmed, setConfirmed] = useState(false);
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 5;
 
   useEffect(() => {
-    const checkOrderStatus = async () => {
+    if (!orderId) {
+      setError('Missing order ID');
+      setLoading(false);
+      navigate('/');
+      return;
+    }
+
+    const verifyOrder = async () => {
       try {
-        const res = await axios.get(`/api/order/${orderId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        setLoading(true);
+        const res = await axios.get(`/api/orders/order-success?orderId=${orderId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
 
-        if (res.data.status === 'confirmed') {
-          setConfirmed(true);
-
-          // Refresh cart
+        if (res.data.success) {
+          setOrder(res.data.order);
+          // Clear cart
           const cartRes = await axios.get('/user/cart', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` }
           });
-
           setCart(cartRes.data.cart || []);
         } else {
-          // Retry after delay if not confirmed yet
-          setTimeout(checkOrderStatus, 2000);
+          throw new Error(res.data.error || 'Order verification failed');
         }
       } catch (err) {
-        console.error(' Failed to check order status:', err.message);
+        if (retryCount < maxRetries) {
+          setTimeout(() => setRetryCount(c => c + 1), 2000);
+        } else {
+          setError(err.response?.data?.error || err.message || 'Order verification failed');
+          console.error('Order verification error:', err);
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (orderId) {
-      checkOrderStatus();
-    }
-  }, [orderId, token, setCart]);
+    verifyOrder();
+  }, [orderId, token, navigate, setCart, retryCount]);
+
+  if (loading) return <Loading />;
+  if (error) return (
+    <div className="error-container">
+      <h2>Order Processing Issue</h2>
+      <p>{error}</p>
+      <div className="button-group">
+        <button onClick={() => navigate('/order-history')}>
+          View Order History
+        </button>
+        <button onClick={() => navigate('/')}>
+          Return Home
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="order-success">
-      <div className="success-container">
-        {confirmed ? (
-          <>
-            <div className="success-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-            <h1>Your Order Was Successful!</h1>
-            <p>Thank you for your purchase. Your order has been placed and is being processed.</p>
-            <p className="order-id">
-              Order ID: <span>{orderId}</span>
-            </p>
-            <div className="action-buttons">
-              <Link to={`/order/${orderId}`} className="view-order-btn">
-                View Order Details
-              </Link>
-              <Link to="/order-history" className="view-history-btn">
-                View Order History
-              </Link>
-            </div>
-            <Link to="/" className="continue-shopping-btn">
-              Continue Shopping
-            </Link>
-          </>
-        ) : (
-          <div className="loading">
-            <p>Processing your order...</p>
+    <div className="success-page">
+      <div className="success-card">
+        <div className="checkmark">✓</div>
+        <h1>Order Confirmed!</h1>
+        <p className="order-reference">Order #: {order?.id.slice(-8).toUpperCase()}</p>
+        
+        <div className="order-details">
+          <h3>Order Summary</h3>
+          <div className="detail-row">
+            <span>Status:</span>
+            <span className={`status-${order?.status}`}>
+              {order?.status}
+            </span>
           </div>
-        )}
+          <div className="detail-row">
+            <span>Total Amount:</span>
+            <span>${order?.amount?.toFixed(2)}</span>
+          </div>
+          <div className="detail-row">
+            <span>Date:</span>
+            <span>{new Date(order?.createdAt).toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div className="action-buttons">
+          <button 
+            className="primary-btn"
+            onClick={() => navigate(`/order/${order?.id}`)}
+          >
+            View Order Details
+          </button>
+          <button 
+            className="secondary-btn"
+            onClick={() => navigate('/order-history')}
+          >
+            Order History
+          </button>
+        </div>
+
+        <button 
+          className="continue-btn"
+          onClick={() => navigate('/')}
+        >
+          Continue Shopping
+        </button>
       </div>
     </div>
   );
