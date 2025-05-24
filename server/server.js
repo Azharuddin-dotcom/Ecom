@@ -10,7 +10,7 @@ const app = express();
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'https://ecom-1-b7dd.onrender.com', 
+  origin: process.env.CLIENT_URL || ' http://localhost:3000', 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
