@@ -11,10 +11,7 @@ const UserAPI = (token) => {
     if (token) {
       const getUser = async () => {
         try {
-          const res = await axios.get(`/user/infor`, {
-            headers: { Authorization: token },
-          });
-
+          const res = await axios.get(`/user/infor`);
           setIsLogged(true);
           setEmail(res.data.email);
           setCart(res.data.cart || []);
