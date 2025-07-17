@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { GlobalState } from '../../../GlobalState';
 import axios from '../utils/axios';
@@ -72,8 +72,14 @@ const OrderSuccess = () => {
 
   return (
     <div className="success-page">
-      {/* Success UI remains the same as before */}
-    </div>
+    <h2>🎉 Thank you for your purchase!</h2>
+    <p>Order ID: {order.id}</p>
+    <p>Status: {order.status}</p>
+    <p>Amount: ₹{order.amount}</p>
+    <button onClick={() => navigate('/order-history')}>
+      View Order History
+    </button>
+  </div>
   );
 };
 
