@@ -92,8 +92,8 @@ const OrderDetails = () => {
         <div className="products-list">
           {order.products && order.products.map((item, index) => (
             <div className="product-item" key={index}>
-              {item.image && (
-                <img src={item.image} alt={item.title} className="product-image" />
+              {item.images && item.images.url && (
+                <img src={item.images.url} alt={item.title} className="product-image" />
               )}
               <div className="product-details">
                 <h4>{item.title}</h4>
