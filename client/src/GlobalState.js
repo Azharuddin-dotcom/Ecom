@@ -14,7 +14,9 @@ export const DataProvider = ({ children }) => {
         try {
             const res = await axios.get(`/user/refresh_token`);
             console.log(res);
-            setToken(res.data.accesstoken);
+            const accessToken = res.data.accesstoken;
+            setToken(accessToken);
+            localStorage.setItem('token', accessToken);
         } catch (err) {
             alert(err.response.data.msg);
             localStorage.removeItem('firstLogin');
