@@ -72,13 +72,26 @@ const OrderSuccess = () => {
 
   return (
     <div className="success-page">
-    <h2>🎉 Thank you for your purchase!</h2>
-    <p>Order ID: {order.id}</p>
-    <p>Status: {order.status}</p>
-    <p>Amount: ₹{order.amount}</p>
-    <button onClick={() => navigate('/order-history')}>
-      View Order History
-    </button>
+    <div className="success-card">
+      <div className="checkmark">✓</div>
+      <div className="success-emoji">🎉</div>
+      <h2>Thank you for your purchase!</h2>
+      
+      <div className="order-details">
+        <p><span className="success-highlight">Order ID:</span> {order.id}</p>
+        <p><span className="success-highlight">Status:</span> <span className="status-confirmed">{order.status}</span></p>
+        <p><span className="success-highlight">Amount:</span> ₹{order.amount}</p>
+      </div>
+      
+      <div className="button-group">
+        <button onClick={() => navigate('/order-history')}>
+          View Order History
+        </button>
+        <button onClick={() => navigate('/')}>
+          Continue Shopping
+        </button>
+      </div>
+    </div>
   </div>
   );
 };
