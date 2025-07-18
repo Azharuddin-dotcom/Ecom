@@ -1,0 +1,5 @@
+Backend - https://ecom-w89w.onrender.com
+
+Frontend - https://ecomrr.netlify.app
+
+Final Deployed Link is Frontend Deployed Link
